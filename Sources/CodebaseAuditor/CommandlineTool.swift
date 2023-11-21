@@ -24,7 +24,12 @@ struct MutableStaticVariables: AsyncParsableCommand {
                       let name = resourceValues.name
                 else { continue }
 
-                if isDirectory == false, name.hasSuffix(".swift") {
+                // Skip directories for faster processing! e.g. Resources
+                if name.contains("Tests") {
+                    directoryEnumerator.skipDescendants()
+                } else if name == "Resources" {
+                    directoryEnumerator.skipDescendants()
+                } else if isDirectory == false, name.hasSuffix(".swift") {
                     group.addTask {
                         let source = try String(contentsOf: fileURL, encoding: .utf8)
                         let result = Query.mutableStaticVariables(code: source, fileName: fileURL.lastPathComponent)
